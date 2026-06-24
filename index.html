@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Henry's Clubhouse</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: #2C1810;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .clubhouse-container {
+            position: relative;
+            width: min(900px, 100vw);
+            aspect-ratio: 4 / 3;
+            background-image: url(Reve-Backyard-Sports.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            cursor: default;
+        }
+
+        /* Clickable hotspot areas */
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .hotspot:hover {
+            backdrop-filter: brightness(1.25) saturate(1.1);
+        }
+
+        /* === HOTSPOT POSITIONS (% of container, tuned to Backyard-Sports.png) === */
+
+        /* Basketball court window opening */
+        .hs-window {
+            top: 6%;
+            left: 4%;
+            width: 20%;
+            height: 57%;
+        }
+
+        /* Binoculars (on sill below window) */
+        .hs-binoculars {
+            top: 62%;
+            left: 10%;
+            width: 12%;
+            height: 11%;
+        }
+
+        /* EXIT pennant (red triangle, far left wall) */
+        .hs-pennant {
+            top: 58%;
+            left: 0%;
+            width: 7%;
+            height: 22%;
+        }
+
+        /* Trophy (top shelf compartment) */
+        .hs-trophy {
+            top: 4%;
+            left: 30%;
+            width: 17%;
+            height: 33%;
+        }
+
+        /* Figurine + photo frame (middle shelf compartment) */
+        .hs-figurine {
+            top: 42%;
+            left: 30%;
+            width: 17%;
+            height: 17%;
+        }
+
+        /* Cap + glove (bottom shelf compartment) */
+        .hs-cap {
+            top: 61%;
+            left: 29%;
+            width: 19%;
+            height: 20%;
+        }
+
+        /* Vinyl record (floor, oval shape) */
+        .hs-home {
+            top: 71%;
+            left: 15%;
+            width: 38%;
+            height: 24%;
+            border-radius: 50%;
+        }
+
+        /* About Me board (right wall, full board) */
+        .hs-league {
+            top: 5%;
+            left: 53%;
+            width: 44%;
+            height: 57%;
+        }
+
+        /* Books stacked on blue crate */
+        .hs-crate {
+            top: 56%;
+            left: 53%;
+            width: 26%;
+            height: 31%;
+        }
+
+        /* Basketball (far bottom-right corner, circle) */
+        .hs-baseball {
+            top: 77%;
+            left: 86%;
+            width: 10%;
+            height: 13%;
+            border-radius: 50%;
+        }
+
+        /* Ladder (bottom-left) */
+        .hs-ladder {
+            top: 77%;
+            left: 0%;
+            width: 8%;
+            height: 17%;
+        }
+
+        /* ===== CURSOR LABEL ===== */
+        .cursor-label {
+            position: fixed;
+            background: rgba(20, 10, 5, 0.88);
+            color: #FFE87C;
+            padding: 5px 11px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-family: 'Comic Sans MS', cursive;
+            white-space: nowrap;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+        .cursor-label.show { opacity: 1; }
+
+        /* ===== MODAL ===== */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: linear-gradient(175deg, #E8C98A 0%, #D4A85A 100%);
+            border: 5px solid #7a4818;
+            border-radius: 12px;
+            padding: 28px 32px 28px;
+            max-width: 480px;
+            width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        /* Wood grain stripe on modal */
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                180deg,
+                transparent,
+                transparent 18px,
+                rgba(139,69,19,0.06) 18px,
+                rgba(139,69,19,0.06) 20px
+            );
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: rgba(120,60,10,0.15);
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #7a4818;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            line-height: 1;
+        }
+        .modal-close:hover { background: rgba(120,60,10,0.3); }
+
+        .modal h2 {
+            color: #5a2e08;
+            margin-bottom: 16px;
+            font-size: 22px;
+            text-align: center;
+            border-bottom: 3px solid #7a4818;
+            padding-bottom: 10px;
+        }
+
+        .modal p {
+            color: #4a2c0a;
+            line-height: 1.65;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .modal a {
+            color: #1a4ab0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .modal a:hover { color: #c0392b; text-decoration: underline; }
+        .modal strong { color: #5a2e08; }
+
+        /* Click sparkle */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 18px;
+            z-index: 500;
+            animation: sparkle-pop 0.55s ease-out forwards;
+        }
+        @keyframes sparkle-pop {
+            0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+            60%  { transform: scale(1.3) rotate(200deg); opacity: 1; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="clubhouse-container" id="scene">
+
+        <!-- HOTSPOTS -->
+        <div class="hotspot hs-window"     data-label="🏀 The Court"             onclick="openModal('about')"></div>
+        <div class="hotspot hs-binoculars" data-label="🔭 Binoculars"           onclick="openModal('vision')"></div>
+        <div class="hotspot hs-pennant"    data-label="🏳️ EXIT Pennant"         onclick="openModal('connect')"></div>
+        <div class="hotspot hs-trophy"     data-label="🏆 Trophy Case"          onclick="openModal('featured')"></div>
+        <div class="hotspot hs-figurine"   data-label="🏍️ Figurine &amp; Frame" onclick="openModal('experience')"></div>
+        <div class="hotspot hs-cap"        data-label="🧢 Cap &amp; Glove"      onclick="openModal('skills')"></div>
+        <div class="hotspot hs-home"       data-label="💿 Vinyl Record"         onclick="sparkleClick(event)"></div>
+        <div class="hotspot hs-league"     data-label="📋 About Me"             onclick="openModal('blog')"></div>
+        <div class="hotspot hs-crate"      data-label="📚 The Bookshelf"        onclick="openModal('resume')"></div>
+        <div class="hotspot hs-baseball"   data-label="🏀 Basketball"           onclick="sparkleClick(event)"></div>
+        <div class="hotspot hs-ladder"     data-label="🪜 Ladder"              onclick="openModal('contact')"></div>
+
+    </div>
+
+    <!-- Cursor label -->
+    <div class="cursor-label" id="cursor-label"></div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const content = {
+            welcome: {
+                title: "🏠 Welcome, Rookie!",
+                body: `
+                    <p>Welcome to my digital clubhouse! Just like the backyard was the great equalizer in Backyard Sports, this is where I hang out on the web.</p>
+                    <p>Click around the room — every object opens something. The window, the trophy, the board, the crate… it's all interactive.</p>
+                    <p><strong>Thanks for stopping by. Make yourself at home.</strong></p>
+                `
+            },
+            about: {
+                title: "🪟 The View From Here",
+                body: `
+                    <p>Hey, I'm <strong>Henry</strong>. I build things on the internet.</p>
+                    <p><strong>Background:</strong><br>[Your story here — where you're from, what drives you, your path into tech.]</p>
+                    <p><strong>Currently:</strong><br>[What you're working on or focused on right now.]</p>
+                    <p><strong>Beyond work:</strong><br>[Hobbies, interests, what makes you you.]</p>
+                `
+            },
+            featured: {
+                title: "🏆 MVP Projects",
+                body: `
+                    <p>The gold trophies. The ones I'm most proud of:</p>
+                    <p><strong>🥇 [Project Name]</strong><br>[What it does and why it matters.]<br><em>Stack: [tech]</em> · <a href="#" target="_blank">Demo</a> · <a href="#" target="_blank">Code</a></p>
+                    <p><strong>🥈 [Project Name]</strong><br>[Description.]<br><em>Stack: [tech]</em></p>
+                    <p><strong>🥉 [Project Name]</strong><br>[Description.]<br><em>Stack: [tech]</em></p>
+                    <p>More on <a href="#" target="_blank">GitHub →</a></p>
+                `
+            },
+            experience: {
+                title: "🏍️ League History",
+                body: `
+                    <p>Teams I've suited up for:</p>
+                    <p><strong>[Current Role]</strong> · [Company] · [Dates]<br>[What you did and built.]</p>
+                    <p><strong>[Previous Role]</strong> · [Company] · [Dates]<br>[Impact and scope.]</p>
+                    <p><strong>[Earlier Role]</strong> · [Company] · [Dates]<br>[What you learned.]</p>
+                `
+            },
+            skills: {
+                title: "🧢 The Toolkit",
+                body: `
+                    <p><strong>Languages:</strong><br>[e.g. JavaScript, TypeScript, Python, Go]</p>
+                    <p><strong>Frameworks:</strong><br>[e.g. React, Next.js, Node, FastAPI]</p>
+                    <p><strong>Tools & Cloud:</strong><br>[e.g. Git, Docker, AWS, Vercel]</p>
+                    <p><strong>Design:</strong><br>[e.g. Figma, CSS, Tailwind]</p>
+                    <p>Always picking up new plays.</p>
+                `
+            },
+            blog: {
+                title: "📋 League Play — Writing",
+                body: `
+                    <p>Things I've written down:</p>
+                    <p><strong>"[Post Title]"</strong><br><em>[Date]</em> · [One-line summary.]<br><a href="#" target="_blank">Read →</a></p>
+                    <p><strong>"[Post Title]"</strong><br><em>[Date]</em> · [Summary.]<br><a href="#" target="_blank">Read →</a></p>
+                    <p><strong>"[Post Title]"</strong><br><em>[Date]</em> · [Summary.]<br><a href="#" target="_blank">Read →</a></p>
+                    <p>All posts on <a href="#" target="_blank">Substack →</a></p>
+                `
+            },
+            resume: {
+                title: "📦 The Crate",
+                body: `
+                    <p>What's in the box:</p>
+                    <p>• [X] years of experience<br>• Strong in [your main areas]<br>• [Degree / school]<br>• [Certifications if any]</p>
+                    <p style="text-align:center;margin-top:18px">
+                        <a href="#" download style="display:inline-block;background:#5a2e08;color:#FFE87C;padding:10px 22px;border-radius:8px;font-weight:bold;text-decoration:none;font-size:14px;">
+                            📄 Download Resume
+                        </a>
+                    </p>
+                `
+            },
+            vision: {
+                title: "🔭 Scouting Ahead",
+                body: `
+                    <p>What I'm keeping an eye on:</p>
+                    <p><strong>Big picture:</strong><br>[Your professional vision — what kind of impact you want to have.]</p>
+                    <p><strong>Right now:</strong><br>[Current goals, things you're learning or building.]</p>
+                    <p><strong>Dream projects:</strong><br>[Types of work or problems you'd love to tackle.]</p>
+                `
+            },
+            connect: {
+                title: "🏳️ Connect",
+                body: `
+                    <p>Find me here:</p>
+                    <p>📧 <a href="mailto:email@email.com">email@email.com</a></p>
+                    <p>💼 <a href="#" target="_blank">LinkedIn</a></p>
+                    <p>💻 <a href="#" target="_blank">GitHub</a></p>
+                    <p>✍️ <a href="#" target="_blank">Substack</a></p>
+                    <p>🐦 <a href="#" target="_blank">Twitter / X</a></p>
+                `
+            },
+            contact: {
+                title: "🪜 Let's Talk",
+                body: `
+                    <p>Whether it's a collaboration, a role, or just a good conversation about tech — I'm in.</p>
+                    <p>📧 <a href="mailto:email@email.com">email@email.com</a></p>
+                    <p>I reply to every message.</p>
+                `
+            }
+        };
+
+        // Cursor label
+        const label = document.getElementById('cursor-label');
+
+        document.querySelectorAll('.hotspot').forEach(hs => {
+            hs.addEventListener('mouseenter', e => {
+                label.textContent = e.currentTarget.dataset.label;
+                label.classList.add('show');
+            });
+            hs.addEventListener('mousemove', e => {
+                label.style.left = (e.clientX + 14) + 'px';
+                label.style.top  = (e.clientY - 36) + 'px';
+            });
+            hs.addEventListener('mouseleave', () => label.classList.remove('show'));
+        });
+
+        // Modal
+        function openModal(key) {
+            const c = content[key];
+            if (!c) return;
+            document.getElementById('modal-body').innerHTML = `<h2>${c.title}</h2>${c.body}`;
+            document.getElementById('modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modal').addEventListener('click', e => {
+            if (e.target.id === 'modal') closeModal();
+        });
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+        // Baseball sparkle
+        function sparkleClick(e) {
+            const scene = document.getElementById('scene');
+            const sr = scene.getBoundingClientRect();
+            const emojis = ['⚾','✨','🌟','💫','⭐','🎉'];
+            for (let i = 0; i < 7; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'sparkle';
+                    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = (e.clientX - sr.left + (Math.random() * 60 - 30)) + 'px';
+                    el.style.top  = (e.clientY - sr.top  + (Math.random() * 60 - 30)) + 'px';
+                    scene.appendChild(el);
+                    setTimeout(() => el.remove(), 600);
+                }, i * 80);
+            }
+        }
+    </script>
+</body>
+</html>
