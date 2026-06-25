@@ -21,14 +21,19 @@ The design is intentionally malleable. Right now the room reflects where I am. E
 ## Stack
 
 - Vanilla HTML, CSS, JavaScript
-- Hosted on Vercel
-- No frameworks, no build step — just files
+- Vercel serverless functions (Node.js) for live data
+- No frameworks, no build step
 
 ## Structure
 
 ```
 /
-├── index.html                   # Everything lives here
+├── index.html                   # The clubhouse room
+├── books.html                   # Library page
+├── books.js                     # Library page logic
+├── styles.css
+├── api/
+│   └── goodreads.js             # Vercel function: proxies Goodreads RSS
 ├── Reve-Backyard-Sports.png     # Background scene
 ├── Backyard-Sports.png          # Alternate/source asset
 └── favicon.png
@@ -40,14 +45,19 @@ The design is intentionally malleable. Right now the room reflects where I am. E
 # Clone the repo
 git clone https://github.com/hstro/personal-site-v2.git
 cd personal-site-v2
+npm install
 
-# Open in browser — no server needed
+# Run with Vercel CLI (needed for the /api routes)
+npx vercel dev
+
+# Or open index.html directly — the clubhouse works without a server,
+# but books.html requires the Vercel dev server for live Goodreads data
 open index.html
 ```
 
 ## Deploying
 
-Connected to Vercel. Every push to `main` deploys automatically my project.
+Connected to Vercel. Every push to `main` deploys automatically.
 
 ## Inspirations
 
