@@ -55,7 +55,8 @@ async function handler(req, res) {
     return [];
   });
 
-  if (books.length === 0) {
+  const anySucceeded = results.some(r => r.status === 'fulfilled');
+  if (!anySucceeded) {
     return res.status(502).json({ error: 'Failed to load books' });
   }
 
