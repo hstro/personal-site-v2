@@ -21,7 +21,7 @@ The design is intentionally malleable. Right now the room reflects where I am. E
 ## Stack
 
 - Vanilla HTML, CSS, JavaScript
-- Hosted on [Vercel](https://vercel.com)
+- Hosted on Vercel
 - No frameworks, no build step — just files
 
 ## Structure
@@ -47,7 +47,7 @@ open index.html
 
 ## Deploying
 
-Connected to Vercel. Every push to `main` deploys automatically to [henry-clubhouse.vercel.app](https://henry-clubhouse.vercel.app).
+Connected to Vercel. Every push to `main` deploys automatically my project.
 
 ## Inspirations
 
