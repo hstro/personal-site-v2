@@ -31,7 +31,7 @@ Three files change:
    ```
 4. `read` shelf filtered to books with `dateRead` within the last 12 months
 5. Merged array returned as JSON to the browser
-6. `books.js` passes data through existing `calculateStats()` and display functions (field names updated to match new shape)
+6. `books.js` passes data through existing `calculateStats()` and display functions (field names updated to match new shape). All stats (total books, total pages, avg rating) reflect only the data returned — i.e., last-12-months reads + currently reading. Stats are scoped to that window, not all-time.
 
 Goodreads RSS caps at 200 items per shelf — sufficient for a personal library.
 

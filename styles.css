@@ -1,0 +1,25 @@
+body {
+    font-family: "Nanum Gothic Coding", monospace;
+    font-weight: 400;
+    font-style: normal; 
+    color: black;
+    background-color: white;
+}
+
+.Introduction {
+    display: flex;
+    flex-direction: column;  
+    align-items: center;
+}
+
+#navigation-menu {
+    display: flex;
+    flex-direction: column;  
+    align-items: center;
+}
+
+#Memoji {
+    width: 200px;
+}
+
+  

@@ -1,3 +1,7 @@
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function calculateStats(books) {
   const stats = {
     totalBooks: 0,
@@ -67,6 +71,10 @@ function displayStats(stats) {
 function displayBooksByYear(booksByYear) {
   const container = document.getElementById('books-by-year');
   const years = Object.keys(booksByYear).sort((a, b) => b - a);
+  if (years.length === 0) {
+    container.innerHTML = '<p class="loading">No books read in the last 12 months.</p>';
+    return;
+  }
   const maxCount = Math.max(...Object.values(booksByYear));
 
   let html = '<div class="year-chart">';
@@ -93,8 +101,8 @@ function displayRecentBooks(recentBooks) {
     const date = book.dateRead ? new Date(book.dateRead).toLocaleDateString() : '';
     html += `
       <div class="book-card">
-        <h3>${book.title}</h3>
-        <p class="author">by ${book.author}</p>
+        <h3>${esc(book.title)}</h3>
+        <p class="author">by ${esc(book.author)}</p>
         <p class="rating">${stars}</p>
         <p class="date">Read: ${date}</p>
       </div>`;
@@ -107,7 +115,7 @@ function displayTopRated(topBooks) {
   const container = document.getElementById('top-rated');
   let html = '<ul class="top-rated-list">';
   topBooks.slice(0, 10).forEach(book => {
-    html += `<li><strong>${book.title}</strong> by ${book.author}</li>`;
+    html += `<li><strong>${esc(book.title)}</strong> by ${esc(book.author)}</li>`;
   });
   html += '</ul>';
   container.innerHTML = html;

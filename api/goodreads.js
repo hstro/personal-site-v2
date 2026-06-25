@@ -25,10 +25,10 @@ function parseRSS(xml, shelf) {
     return {
       title,
       author,
-      rating: parseInt(item.user_rating) || 0,
+      rating: parseInt(item.user_rating, 10) || 0,
       dateRead: get(item.user_read_at) || null,
       coverUrl: get(item.book_large_image_url),
-      pages: parseInt(item.num_pages) || 0,
+      pages: parseInt(item.num_pages, 10) || 0,
       shelf,
     };
   }).filter(book => {
