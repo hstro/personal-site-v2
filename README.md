@@ -28,7 +28,7 @@ The design is intentionally malleable. Right now the room reflects where I am. E
 
 ```
 /
-├── index.html                   # The clubhouse room
+├── index.html                   # The clubhouse room (click the bookshelf → books)
 ├── books.html                   # Library page
 ├── books.js                     # Library page logic
 ├── styles.css
